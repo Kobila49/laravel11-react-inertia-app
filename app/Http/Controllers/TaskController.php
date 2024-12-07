@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\TaskResource;
 use App\Http\Resources\UserResource;
 use App\Models\Project;
 use App\Models\Task;
-use App\Http\Requests\StoreTaskRequest;
-use App\Http\Requests\UpdateTaskRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -23,8 +23,8 @@ class TaskController extends Controller
     {
         $query = Task::query();
 
-        $sortField = request("sort_field", 'created_at');
-        $sortDirection = request("sort_direction", "desc");
+        $sortField = request("sort_field", 'id');
+        $sortDirection = request("sort_direction", "asc");
 
         // Filter by name
         if (request("name")) {
@@ -36,9 +36,10 @@ class TaskController extends Controller
             $query->where("status", request("status"));
         }
 
-        $tasks = $query->orderBy($sortField, $sortDirection)
-            ->paginate(10)
-            ->withQueryString();
+
+        $query->orderBy($sortField, $sortDirection);
+
+        $tasks = $query->paginate(10)->withQueryString();
 
         return inertia("Task/Index", [
             "tasks" => TaskResource::collection($tasks),
@@ -46,6 +47,7 @@ class TaskController extends Controller
             'success' => session('success'),
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -163,8 +165,8 @@ class TaskController extends Controller
             ->where('created_by', $user->id)
             ->orWhere('assigned_user_id', $user->id);
 
-        $sortField = request("sort_field", 'created_at');
-        $sortDirection = request("sort_direction", "desc");
+        $sortField = request("sort_field", 'id');
+        $sortDirection = request("sort_direction", "asc");
 
         if (request("name")) {
             $query->where("name", "like", "%" . request("name") . "%");
