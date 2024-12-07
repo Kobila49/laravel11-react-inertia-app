@@ -166,7 +166,7 @@ export default function TasksTable({
                 <td className="px-3 py-2">{task.createdBy.name}</td>
                 <td className="px-3 py-2">{task.assignedUser?.name || "Unassigned"}</td>
                 <td className={authUser.role === "ADMIN" ? "px-3 py-2 text-nowrap" : "px-3 py-2 text-right"}>
-                  {task.assignedUser?.id === authUser.id && (
+                  {(task.assignedUser?.id === authUser.id || authUser.role === "ADMIN") && (
                     <Link
                       href={route("task.edit", task.id)}
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1"

@@ -95,8 +95,7 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        // Allow only ADMIN or the user who created the task to edit it
-        if (Auth::user()->role !== 'ADMIN' && $task->created_by !== Auth::id()) {
+        if (Auth::user()->role !== 'ADMIN' && ($task->created_by !== Auth::id() && $task->assigned_user_id !== Auth::id())) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -115,8 +114,7 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        // Allow only ADMIN or the user who created the task to update it
-        if (Auth::user()->role !== 'ADMIN' && $task->created_by !== Auth::id()) {
+        if (Auth::user()->role !== 'ADMIN' && ($task->created_by !== Auth::id() && $task->assigned_user_id !== Auth::id())) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -163,7 +161,7 @@ class TaskController extends Controller
 
         $query = Task::query()
             ->where('created_by', $user->id)
-            ->orWhere('assigned_user_id', $user->id); // Include tasks assigned to the user
+            ->orWhere('assigned_user_id', $user->id);
 
         $sortField = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", "desc");

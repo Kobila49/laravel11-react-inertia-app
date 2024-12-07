@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link } from "@inertiajs/react";
+import {Head, Link} from "@inertiajs/react";
 import {
   TASK_PRIORITY_CLASS_MAP,
   TASK_PRIORITY_TEXT_MAP,
@@ -8,7 +8,7 @@ import {
 } from "@/constants.jsx";
 
 interface ShowProps {
-  auth: { user: { name: string } };
+  auth: { user: { id: number, name: string, role: string } };
   task: {
     id: number;
     name: string;
@@ -20,12 +20,12 @@ interface ShowProps {
     updatedBy: { name: string };
     createdBy: { name: string };
     project: { id: number; name: string };
-    assignedUser: { name: string };
+    assignedUser?: { id: number; name: string };
     image_path?: string;
   };
 }
 
-export default function Show({ auth, task }: ShowProps) {
+export default function Show({auth, task}: ShowProps) {
   return (
     <AuthenticatedLayout
       user={auth.user}
@@ -34,16 +34,18 @@ export default function Show({ auth, task }: ShowProps) {
           <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {`Task "${task.name}"`}
           </h2>
-          <Link
-            href={route("task.edit", task.id)}
-            className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"
-          >
-            Edit
-          </Link>
+          {(task.assignedUser?.id === auth.user.id || auth.user.role === "ADMIN") && (
+            <Link
+              href={route("task.edit", task.id)}
+              className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"
+            >
+              Edit
+            </Link>
+          )}
         </div>
       }
     >
-      <Head title={`Task "${task.name}"`} />
+      <Head title={`Task "${task.name}"`}/>
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">

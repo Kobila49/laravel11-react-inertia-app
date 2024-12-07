@@ -1,9 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import {Head, Link} from "@inertiajs/react";
-import {
-  PROJECT_STATUS_CLASS_MAP,
-  PROJECT_STATUS_TEXT_MAP,
-} from "@/constants";
+import {PROJECT_STATUS_CLASS_MAP, PROJECT_STATUS_TEXT_MAP,} from "@/constants";
 import TasksTable from "../Task/TasksTable";
 
 interface ShowProps {
@@ -33,12 +30,14 @@ export default function Show({auth, success, project, tasks, queryParams}: ShowP
           <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {`Project "${project.name}"`}
           </h2>
-          <Link
-            href={route("project.edit", project.id)}
-            className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"
-          >
-            Edit
-          </Link>
+          {auth.user.role === "ADMIN" && (
+            <Link
+              href={route("project.edit", project.id)}
+              className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"
+            >
+              Edit
+            </Link>
+          )}
         </div>
       }
     >
