@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import {Head, Link, router} from "@inertiajs/react";
+import {Head, Link, router, usePage} from "@inertiajs/react";
 import TasksTable from "./TasksTable";
 import TextInput from "@/Components/TextInput";
 import SelectInput from "@/Components/SelectInput";
@@ -24,14 +24,27 @@ interface IndexProps {
 
 export default function Index({auth, success, tasks, queryParams = {}}: IndexProps) {
   queryParams = queryParams ?? {};
+  const { url } = usePage();
 
   const searchFieldChanged = (name: keyof IndexProps["queryParams"], value: string) => {
     if (value) {
       queryParams[name] = value;
+      queryParams.page = 1;
     } else {
       delete queryParams[name];
     }
-    router.get(route("task.index"), queryParams);
+    function determineRoute(url: string): string {
+      const basePath = url.split("?")[0];
+
+      if (basePath.endsWith("/my-tasks")) {
+        return "task.myTasks";
+      } else if (basePath.endsWith("/task")) {
+        return "task.index";
+      } else {
+        throw new Error(`Unknown route for base path: ${basePath}`);
+      }
+    }
+    router.get(route(determineRoute(url)), queryParams ?? {});
   };
 
   const onKeyPress = (name: keyof IndexProps["queryParams"], e: React.KeyboardEvent<HTMLInputElement>) => {

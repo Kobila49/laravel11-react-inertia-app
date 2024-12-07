@@ -3,7 +3,7 @@ import SelectInput from "@/Components/SelectInput";
 import TextInput from "@/Components/TextInput";
 import TableHeading from "@/Components/TableHeading";
 import {Link, router, usePage} from "@inertiajs/react";
-import { TASK_STATUS_CLASS_MAP, TASK_STATUS_TEXT_MAP } from "@/constants";
+import {TASK_STATUS_CLASS_MAP, TASK_STATUS_TEXT_MAP} from "@/constants";
 
 interface Task {
   id: number;
@@ -32,9 +32,20 @@ export default function TasksTable({
                                      queryParams = null,
                                      hideProjectColumn = false,
                                    }: TasksTableProps) {
-  const { url } = usePage(); // Access the current URL
-  console.log(url);
+  const {url} = usePage();
   queryParams = queryParams || {};
+
+  const determineRoute = (url: string): string => {
+    const basePath = url.split("?")[0];
+
+    if (basePath.endsWith("/my-tasks")) {
+      return "task.myTasks";
+    } else if (basePath.endsWith("/task")) {
+      return "task.index";
+    } else {
+      throw new Error(`Unknown route for base path: ${basePath}`);
+    }
+  };
 
   const searchFieldChanged = (name: string, value: string) => {
     if (value) {
@@ -42,8 +53,7 @@ export default function TasksTable({
     } else {
       delete queryParams[name];
     }
-    // @ts-ignore
-    router.get(url, queryParams);
+    router.get(route(determineRoute(url)), queryParams ?? {});
   };
 
   const onKeyPress = (name: string, e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -58,8 +68,7 @@ export default function TasksTable({
       queryParams.sort_field = name;
       queryParams.sort_direction = "asc";
     }
-    // @ts-ignore
-    router.get(url, queryParams);
+    router.get(route(determineRoute(url)), queryParams ?? {});
   };
 
   const deleteTask = (task: Task) => {
@@ -77,7 +86,8 @@ export default function TasksTable({
 
         <div className="overflow-auto">
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
+            <thead
+              className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
             <tr>
               <TableHeading
                 name="id"
@@ -178,7 +188,7 @@ export default function TasksTable({
             </tbody>
           </table>
         </div>
-        <Pagination links={tasks.meta.links} />
+        <Pagination links={tasks.meta.links}/>
     </>
   );
 }

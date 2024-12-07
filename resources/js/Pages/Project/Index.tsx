@@ -25,6 +25,7 @@ interface IndexProps {
         status?: string;
         sort_field?: string;
         sort_direction?: "asc" | "desc";
+        page?: number;
     };
     success?: string;
 }
@@ -36,6 +37,7 @@ export default function Index({auth, projects, queryParams = {}, success}: Index
         if (value) {
             // @ts-ignore
             queryParams[name] = value;
+            queryParams.page = 1;
         } else {
             delete queryParams[name];
         }
