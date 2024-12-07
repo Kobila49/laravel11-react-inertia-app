@@ -15,3 +15,4 @@
 - To set up the project, you need to have PHP, Composer, Node.js and NPM installed on your machine.
 - For verification of user email, you can use link from logs. Path to logs: `storage/logs/laravel.log`
 - If you want to use email verification you need to set up mail server in `.env` file.
+- You can use two users: igor@example.com(ADMIN) and john@example.com. They both use password Test1234
